@@ -13,11 +13,16 @@ CREATE TABLE Category (
 	name CHAR(50) NOT NULL
 );
 
+INSERT INTO Category VALUE (DEFAULT,DEFAULT,'Автобусы');
+INSERT INTO Category VALUE (DEFAULT,DEFAULT,'Тролейбусы');
+
 CREATE TABLE Position (
 	id INT NOT NULL AUTO_INCREMENT,
 	PRIMARY KEY(id),
 	price DECIMAL(6,2) NOT NULL,
-	description TEXT(300)
+	description TEXT(300),
+	category INT NOT NULL,
+	FOREIGN KEY(category) REFERENCES Category(id)
 );
 
 CREATE TABLE User (

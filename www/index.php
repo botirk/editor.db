@@ -32,6 +32,7 @@
 						<th style="width:75px">идентификатор</th>
 						<th style="width:75px">цена</th>
 						<th style="width:100%">описание</th>
+						<th style="width:75px">категория</th>
 					</tr></thead>
 				<tbody></tbody></table>
 				<button class='btn-success'>добавить</button>
@@ -42,19 +43,26 @@
 						var addID = function() { return "<td>" + selectJSON.id + "</td>"; }
 						var addPrice = function() { return "<td contenteditable>" + selectJSON.price + "</td>"; }
 						var addDesc = function() { return "<td contenteditable>" + selectJSON.description + "</td>"; }
+						var addCategory = function() { return "<td><select></select></td>"}
 						var addRemoveButton = function() { return "<td><button class='btn btn-danger'>удалить</button></td>"; }
-						var addRow = function() { return "<tr id='" + selectJSON.id + "'>" + addID() + addPrice() + addDesc() + addRemoveButton() + "</tr>"; }
+						var addRow = function() { return "<tr id='" + selectJSON.id + "'>" + addID() + addPrice() + addDesc() + addCategory() + addRemoveButton() + "</tr>"; }
 						var removeRow = function() { $("#"+selectJSON.id).remove(); }
 						tbody.append(addRow());
 						//включаем редактор цены
-						var price = $("#"+selectJSON.id).children()[1];
+						var row = $("#"+selectJSON.id);
+						var price = row.children()[1];
 						price.oninput = function(){ 
 							if (isNaN(price.innerHTML)) price.innerHTML = selectJSON.price.toString();
 							else $.ajax("./action.php?update="+selectJSON.id+"&price="+price.innerHTML);
 						};
 						//включаем редактор описания 
-						var desc = $("#"+selectJSON.id).children()[2];
+						var desc = row.children()[2];
 						desc.oninput = function(){ $.post("./action.php?update="+selectJSON.id,{desc: desc.innerHTML}); }
+						//включаем редактор категории
+						var catSelect = $(row.children()[3]).children()[0];
+						category.forEach(function(e) { $(catSelect).append("<option " + (selectJSON.category == e.id ? "selected" : "") + ">"+e.name+"</option>"); });
+						catSelect.onchange = function(){ $.post("./action.php?update="+selectJSON.id,{category: category[catSelect.selectedIndex].id}); }
+						//cat.onclick = function() { dropdown.className += "open"; }
 						//включаем кнопку удаления
 						$(".btn-danger").last()[0].onclick = function() { $.ajax({url: "./action.php?delete="+selectJSON.id, success: function(result) {
 							result = JSON.parse(result);

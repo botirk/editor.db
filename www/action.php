@@ -3,8 +3,9 @@
 	if (isset($_GET['create'])) {
 		include('../pdo.php');
 		$myPDO = getPDO();
-		$myPDO->query('INSERT INTO Position VALUES ( DEFAULT, 0, "" )');
-		echo json_encode(['success' => $myPDO->query('SELECT * FROM Position WHERE id = LAST_INSERT_ID()')->fetchAll()[0]]);
+		$category = $myPDO->query('SELECT id FROM Category LIMIT 1')->fetch()["id"];
+		$myPDO->query("INSERT INTO Position VALUE ( DEFAULT, 0, '', $category )");
+		echo json_encode(['success' => $myPDO->query('SELECT * FROM Position WHERE id = LAST_INSERT_ID()')->fetch()]);
 	} elseif (isset($_GET['delete'])) {
 		include('../pdo.php');
 		$myPDO = getPDO();
@@ -19,6 +20,10 @@
 			include('../pdo.php');
 			$myPDO = getPDO();
 			$myPDO->prepare('UPDATE Position SET description = ? WHERE id = ?')->execute([$_POST['desc'],$_GET['update']]);
+		} elseif (isset($_POST['category'])) {
+			include('../pdo.php');
+			$myPDO = getPDO();
+			$myPDO->prepare('UPDATE Position SET category = ? WHERE id = ?')->execute([$_POST['category'],$_GET['update']]);
 		}
 	}
 ?>
